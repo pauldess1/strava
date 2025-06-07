@@ -16,7 +16,13 @@ map_output = st_folium(
     map_obj, height=500, width=700, returned_objects=["all_drawings"]
 )
 coords = extract_coordinates_from_draw(map_output)
-
+print(coords)
+coords = [
+    (48.76179, 2.306828),
+    (48.761451, 2.308116),
+    (48.770955, 2.311807),
+    (48.770333, 2.316484),
+]
 
 # Affichage
 if coords:
