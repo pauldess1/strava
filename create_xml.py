@@ -2,10 +2,10 @@ import xml.etree.ElementTree as ET
 
 
 class GPX_Constructor:
-    def __init__(self, name, type, data, time="2025-05-10T08:59:05Z"):
+    def __init__(self, name, type, data, start_time):
         self.name = name
         self.type = type
-        self.time = time
+        self.start_time = start_time
         self.data = data
 
     def compose_gpx(self):
@@ -26,7 +26,9 @@ class GPX_Constructor:
         )
         # Metadata
         metadata = ET.SubElement(self.gpx, "metadata")
-        ET.SubElement(metadata, "time").text = self.time  # TODO: reformatting time
+        ET.SubElement(metadata, "time").text = self.start_time.strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
         trk = ET.SubElement(self.gpx, "trk")
         ET.SubElement(trk, "name").text = self.name
         ET.SubElement(trk, "type").text = self.type
