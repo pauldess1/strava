@@ -6,14 +6,14 @@ from map_view import create_interactive_map, extract_coordinates_from_draw
 
 def streamlit_call():
     st.set_page_config(page_title="Traceur GPX", layout="wide")
-    st.title("📍 Trace ton parcours et exporte en GPX")
+    st.title("📍 Draw your run")
 
     # Entrées utilisateur
-    name = st.text_input("Nom du parcours", "Course du dimanche")
-    date = st.date_input("Choisissez une date")
-    heure = st.time_input("Choisissez une heure")
+    name = st.text_input("Name", "Lunch Run")
+    date = st.date_input("Choose the date")
+    heure = st.time_input("Time")
     datetime_complet = datetime.combine(date, heure)
-    st.write("Date et heure sélectionnées :", datetime_complet.isoformat())
+    st.write("Selected date and time :", datetime_complet.isoformat())
 
     # Carte
     map_obj = create_interactive_map()
@@ -23,6 +23,6 @@ def streamlit_call():
     coords = extract_coordinates_from_draw(map_output)
 
     if coords:
-        st.success(f"{len(coords)} points détectés.")
+        st.success(f"{len(coords)} detected points.")
 
     return coords, name, datetime_complet
