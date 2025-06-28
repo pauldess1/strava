@@ -30,6 +30,7 @@ def extract_coordinates_from_draw(draw_data):
         return coords
 
     drawings = draw_data.get("all_drawings", [])
+    print(drawings)
     for feature in drawings:
         geometry = feature.get("geometry", {})
         if geometry.get("type") == "LineString":

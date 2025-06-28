@@ -20,7 +20,7 @@ class GPXExporter:
         track.segments.append(segment)
 
         for lon, lat in self.coords:
-            segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon))  # GPX = lat, lon
+            segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon))
 
         return gpx.to_xml()
 

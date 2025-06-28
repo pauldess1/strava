@@ -33,12 +33,14 @@ class GPX_Constructor:
         trkseg = ET.SubElement(trk, "trkseg")
         for idx, row in self.data.iterrows():
             trkpt = ET.SubElement(
-                trkseg, "trkpt", lat=str(row["lat"]), lon=str(row["lon"])
+                trkseg, "trkpt", lat=str(row["lat"]), lon=str(row["long"])
             )
             ET.SubElement(trkpt, "ele").text = str(row["ele"])
-            ET.SubElement(trkpt, "time").text = row["time"]
+            ET.SubElement(trkpt, "time").text = str(row["time"])
+
             # Extensions
-            if len(self.data.columns.isin(["hr", "cad"])) > 1:
+            facultative = ["hr", "cad"]
+            if len(list(set(facultative) & set(self.data.columns))) > 1:
                 extensions = ET.SubElement(trkpt, "extensions")
                 track_point_extension = ET.SubElement(
                     extensions,
@@ -46,17 +48,47 @@ class GPX_Constructor:
                     xmlns_gpxtpx="http://www.garmin.com/"
                     "xmlschemas/TrackPointExtension/v1",
                 )
-                if len(self.data.columns.isin(["hr"])) > 1:
+                if "hr" in self.data.columns:
                     ET.SubElement(track_point_extension, "gpxtpx:hr").text = str(
                         row["hr"]
                     )
-                if len(self.data.columns.isin(["cad"])) > 1:
+                if "cad" in self.data.columns:
                     ET.SubElement(track_point_extension, "gpxtpx:cad").text = str(
                         row["cad"]
                     )
 
+    def indent_xml(self, element, level=0):
+        """
+        Fonction pour ajouter une indentation à l'élément XML.
+        """
+        # Ajouter un espace supplémentaire pour l'indentation
+        indent = "\n" + "  " * level
+        # Si l'élément a des enfants
+        if len(element):
+            if not element.text or not element.text.strip():
+                element.text = indent + "  "  # Ajout d'un espace d'indentation si vide
+            for elem in element:
+                self.indent_xml(
+                    elem, level + 1
+                )  # Appel récursif pour les sous-éléments
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = indent  # Ajout de l'indentation après l'élément
+        else:
+            if not element.text or not element.text.strip():
+                element.text = ""  # Éviter les lignes vides si pas de texte
+
     def generate_gpx(self):
+        # Composition du fichier GPX (Méthode déjà définie)
         self.compose_gpx()
+
+        # Créer l'arbre XML
         tree = ET.ElementTree(self.gpx)
+
+        # Appliquer l'indentation à l'élément racine
+        self.indent_xml(self.gpx)
+
+        # Écrire dans le fichier XML
         tree.write("output.gpx", encoding="UTF-8", xml_declaration=True)
+
+        # Message de succès
         print("Le fichier XML a été généré avec succès.")
