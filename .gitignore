@@ -2,3 +2,5 @@ venv
 .flake8
 __pycache__
 *.gpx
+*.tif
+*.hgt

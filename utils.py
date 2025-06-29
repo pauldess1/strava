@@ -1,4 +1,8 @@
 from typing import List, Tuple
+import rasterio
+import numpy as np
+from rasterio.transform import from_origin
+from rasterio.sample import sample_gen
 
 
 def interpolate_line(
@@ -35,3 +39,46 @@ def interpolate_line(
     interpolated_points.append(points[-1])  # on ajoute le dernier point
 
     return interpolated_points
+
+
+def get_elevation(lat, lon, path):
+    with rasterio.open(path) as dataset:
+        coords = [(lon, lat)]
+        for val in sample_gen(dataset, coords):
+            return val[0]
+
+
+def convert_hgt_to_tif(hgt_path, tif_path):
+    width = height = 3601
+    dtype = np.int16
+
+    with open(hgt_path, "rb") as f:
+        data = np.fromfile(f, dtype=">i2").reshape((height, width))
+    import re
+
+    match = re.match(r"([NS])(\d+)([EW])(\d+)", hgt_path.split("/")[-1].split("\\")[-1])
+    if not match:
+        raise ValueError("Nom de fichier .hgt non reconnu")
+
+    lat_sign = 1 if match.group(1) == "N" else -1
+    lat = lat_sign * int(match.group(2))
+    lon_sign = 1 if match.group(3) == "E" else -1
+    lon = lon_sign * int(match.group(4))
+    transform = from_origin(
+        lon, lat + 1, 1 / 1200, 1 / 1200
+    )  # 1° divisé par 1200 pour la résolution
+
+    with rasterio.open(
+        tif_path,
+        "w",
+        driver="GTiff",
+        height=height,
+        width=width,
+        count=1,
+        dtype=dtype,
+        crs="EPSG:4326",
+        transform=transform,
+    ) as dst:
+        dst.write(data, 1)
+
+    print(f"Conversion terminée : {tif_path}")

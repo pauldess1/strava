@@ -2,6 +2,7 @@ import pandas as pd
 from geopy.distance import great_circle
 import random
 from datetime import timedelta
+from utils import get_elevation
 
 
 class TrajectoryManager:
@@ -58,7 +59,7 @@ class TrajectoryManager:
                     lat2, lon2 = self.coords[i + 1]
                     lat = lat1 + ratio * (lat2 - lat1)
                     lon = lon1 + ratio * (lon2 - lon1)
-                    elevation = 5
+                    elevation = get_elevation(lat, lon, "paris.tif")
                     trajectory.append([lat, lon, t, elevation])
                     break
                 dist_acc += seg_dist
