@@ -3,6 +3,7 @@ import rasterio
 import numpy as np
 from rasterio.transform import from_origin
 from rasterio.sample import sample_gen
+import math
 
 
 def interpolate_line(
@@ -39,6 +40,17 @@ def interpolate_line(
     interpolated_points.append(points[-1])  # on ajoute le dernier point
 
     return interpolated_points
+
+
+def add_white_noise(lat, lon, noise_meter=1):
+    lat_rad = math.radians(lat)
+    noise_lat = noise_meter / 111000
+    noise_lon = noise_meter / (111000 * math.cos(lat_rad))
+    delta_lat = np.random.normal(0, noise_lat)
+    delta_lon = np.random.normal(0, noise_lon)
+    noisy_lat = lat + delta_lat
+    noisy_lon = lon + delta_lon
+    return noisy_lat, noisy_lon
 
 
 def get_elevation(lat, lon, path):

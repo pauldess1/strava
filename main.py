@@ -4,7 +4,7 @@ from datetime import time
 from create_xml import GPX_Constructor
 
 coords, name, dt = streamlit_call()
-pace = [4, 0]
+pace = [5, 0]
 start_time = time(hour=dt.hour, minute=dt.minute)
 tm = TrajectoryManager(coords, pace, dt)
 df = tm.output
