@@ -10,6 +10,9 @@ def streamlit_call():
 
     # Entrées utilisateur
     name = st.text_input("Name", "Lunch Run")
+    pace_min = st.number_input("Pace (min)", min_value=3)
+    pace_sec = st.number_input("Pace (sec)", min_value=0, max_value=59)
+    pace = [pace_min, pace_sec]
     date = st.date_input("Choose the date")
     heure = st.time_input("Time")
     datetime_complet = datetime.combine(date, heure)
@@ -25,4 +28,4 @@ def streamlit_call():
     if coords:
         st.success(f"{len(coords)} detected points.")
 
-    return coords, name, datetime_complet
+    return coords, name, datetime_complet, pace
